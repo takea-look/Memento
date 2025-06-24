@@ -12,11 +12,42 @@ class MementoStateHolder {
     val state = _state.asStateFlow()
 }
 
-fun MementoStateHolder.updateLayout(id: Int, offset: Offset) {
+fun MementoStateHolder.updateRotation(id: Int, rotationDelta: Float): Float {
+    var updatedRotation = 0f
     val components = state.value.toMutableList()
     val updatedComponents = components.map {
         if (it.id == id) {
-            it.updateLayout(offsetX = offset.x, offsetY = offset.y)
+            updatedRotation = it.rotation + rotationDelta
+            it.updateRotation(updatedRotation)
+        } else it
+        }
+    components.clear()
+    components.addAll(updatedComponents)
+    _state.value = components
+
+    return updatedRotation
+}
+
+fun MementoStateHolder.updateScale(id: Int, scale: Float) {
+    val components = state.value.toMutableList()
+    val updatedComponents = components.map {
+        if (it.id == id) {
+            it.updateScale(it.scale * scale)
+        } else it
+    }
+    components.clear()
+    components.addAll(updatedComponents)
+    _state.value = components
+}
+
+fun MementoStateHolder.updateLayout(id: Int, dragAmount: Offset) {
+    val components = state.value.toMutableList()
+    val updatedComponents = components.map {
+        if (it.id == id) {
+            it.updateLayout(
+                offsetX = it.offsetX + dragAmount.x,
+                offsetY = it.offsetY + dragAmount.y
+            )
         } else it
     }
 
@@ -33,7 +64,9 @@ fun MementoStateHolder.createText(
         id = state.value.size + 1,
         text = initialText,
         offsetX = offset.x,
-        offsetY = offset.y
+        offsetY = offset.y,
+        scale = 1f,
+        rotation = 0f
     )
 
     _state.update { it + component }
@@ -44,7 +77,9 @@ fun MementoStateHolder.createImage(offset: Offset) {
     val component = MementoState.Image(
         id = state.value.size + 1,
         offsetX = 0f,
-        offsetY = 0f
+        offsetY = 0f,
+        scale = 1f,
+        rotation = 0f
     )
 
     _state.update { it + component }
@@ -55,7 +90,9 @@ fun MementoStateHolder.createSticker(offset: Offset) {
     val component = MementoState.Sticker(
         id = state.value.size + 1,
         offsetX = 0f,
-        offsetY = 0f
+        offsetY = 0f,
+        scale = 1f,
+        rotation = 0f
     )
 
     _state.update { it + component }
