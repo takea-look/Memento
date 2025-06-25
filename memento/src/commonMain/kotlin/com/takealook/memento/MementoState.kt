@@ -1,5 +1,7 @@
 package com.takealook.memento
 
+import kotlinx.serialization.Serializable
+
 interface Layout {
     val offsetX: Float
     val offsetY: Float
@@ -16,6 +18,8 @@ interface Identifiable {
 }
 
 sealed interface MementoState : Layout, Identifiable {
+
+    @Serializable
     data class Image(
         override val id: Int,
         override val offsetX: Float,
@@ -36,6 +40,7 @@ sealed interface MementoState : Layout, Identifiable {
         }
     }
 
+    @Serializable
     data class Text(
         val text: String,
         override val id: Int,
@@ -61,6 +66,7 @@ sealed interface MementoState : Layout, Identifiable {
         }
     }
 
+    @Serializable
     data class Sticker(
         override val id: Int,
         override val offsetX: Float,
