@@ -1,7 +1,8 @@
 package com.takealook.memento
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,6 +11,13 @@ import kotlinx.coroutines.flow.update
 class MementoStateHolder {
     internal val _state: MutableStateFlow<List<MementoState>> = MutableStateFlow(emptyList())
     val state = _state.asStateFlow()
+
+    companion object {
+        val Saver = listSaver<MementoStateHolder, MementoState>(
+            save = { it.state.value },
+            restore = { MementoStateHolder().apply { _state.value = it } }
+        )
+    }
 }
 
 fun MementoStateHolder.updateRotation(id: Int, rotationDelta: Float): Float {
@@ -100,6 +108,5 @@ fun MementoStateHolder.createSticker(offset: Offset) {
 
 @Composable
 fun rememberMementoStateHolder(): MementoStateHolder {
-    // TODO : Must Implement rememberSaveable
-    return remember { MementoStateHolder() }
+    return rememberSaveable(saver = MementoStateHolder.Saver) { MementoStateHolder() }
 }
