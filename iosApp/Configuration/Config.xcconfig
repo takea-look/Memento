@@ -1,6 +1,6 @@
 TEAM_ID=
 
-PRODUCT_NAME=memento
+PRODUCT_NAME=memento-lib
 PRODUCT_BUNDLE_IDENTIFIER=com.takealook.memento.memento$(TEAM_ID)
 
 CURRENT_PROJECT_VERSION=1
