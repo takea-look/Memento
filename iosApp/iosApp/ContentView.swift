@@ -1,10 +1,28 @@
 import UIKit
 import SwiftUI
-import ComposeApp
+import Memento
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+        MementoEditorViewControllerKt.MementoEditorViewController { builder in
+
+            builder.sticker {
+                return UIImageView(image: UIImage(named: "ic_glasses"))
+            }
+            builder.sticker {
+                return UIImageView(image: UIImage(named: "ic_glasses"))
+            }
+            builder.sticker {
+                return UIImageView(image: UIImage(named: "ic_glasses"))
+            }
+            builder.sticker {
+                return UIImageView(image: UIImage(named: "ic_glasses"))
+            }
+            builder.sticker {
+                return UIImageView(image: UIImage(named: "ic_glasses"))
+            }
+
+        }
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
@@ -19,3 +37,6 @@ struct ContentView: View {
 
 
 
+#Preview {
+    ContentView()
+}

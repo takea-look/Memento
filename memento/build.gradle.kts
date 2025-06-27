@@ -51,6 +51,12 @@ kotlin {
     }
 }
 
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "com.takealook.memento.resources"
+    generateResClass = auto
+}
+
 dependencies {
     debugImplementation(compose.uiTooling)
 }
