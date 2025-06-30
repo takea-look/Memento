@@ -5,23 +5,13 @@ import Memento
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         MementoEditorViewControllerKt.MementoEditorViewController { builder in
-
-            builder.sticker {
-                return UIImageView(image: UIImage(named: "ic_glasses"))
-            }
-            builder.sticker {
-                return UIImageView(image: UIImage(named: "ic_glasses"))
-            }
-            builder.sticker {
-                return UIImageView(image: UIImage(named: "ic_glasses"))
-            }
-            builder.sticker {
-                return UIImageView(image: UIImage(named: "ic_glasses"))
-            }
-            builder.sticker {
-                return UIImageView(image: UIImage(named: "ic_glasses"))
-            }
-
+            let sticker = MementoSticker(
+                key: "ic_glasses",
+                image: UIImage(named: "ic_glasses")!,
+                contentDescription: "glasses icon"
+            )
+            
+            builder.sticker(content: sticker)
         }
     }
 

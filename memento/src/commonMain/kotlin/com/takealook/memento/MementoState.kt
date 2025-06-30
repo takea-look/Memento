@@ -17,6 +17,10 @@ interface Identifiable {
     val id: Int
 }
 
+interface Cacheable {
+    val key: String
+}
+
 sealed interface MementoState : Layout, Identifiable {
 
     @Serializable
@@ -25,8 +29,10 @@ sealed interface MementoState : Layout, Identifiable {
         override val offsetX: Float,
         override val offsetY: Float,
         override val scale: Float,
-        override val rotation: Float
-    ) : MementoState {
+        override val rotation: Float,
+        override val key: String,
+        val contentDescription: String? = null
+    ) : MementoState, Cacheable {
         override fun updateLayout(offsetX: Float, offsetY: Float): MementoState {
             return copy(offsetX = offsetX, offsetY = offsetY)
         }
@@ -55,27 +61,6 @@ sealed interface MementoState : Layout, Identifiable {
 
         fun updateText(text: String): MementoState {
             return copy(text = text)
-        }
-
-        override fun updateScale(scale: Float): MementoState {
-            return copy(scale = scale)
-        }
-
-        override fun updateRotation(rotation: Float): MementoState {
-            return copy(rotation = rotation)
-        }
-    }
-
-    @Serializable
-    data class Sticker(
-        override val id: Int,
-        override val offsetX: Float,
-        override val offsetY: Float,
-        override val scale: Float,
-        override val rotation: Float
-    ) : MementoState {
-        override fun updateLayout(offsetX: Float, offsetY: Float): MementoState {
-            return copy(offsetX = offsetX, offsetY = offsetY)
         }
 
         override fun updateScale(scale: Float): MementoState {
