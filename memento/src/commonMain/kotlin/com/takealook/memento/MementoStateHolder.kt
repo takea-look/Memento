@@ -12,6 +12,17 @@ class MementoStateHolder {
     internal val _state: MutableStateFlow<List<MementoState>> = MutableStateFlow(emptyList())
     val state = _state.asStateFlow()
 
+    private val _isStickerSheetOpened = MutableStateFlow(false)
+    val isStickerSheetOpened = _isStickerSheetOpened.asStateFlow()
+
+    fun openStickerSheet() {
+        _isStickerSheetOpened.value = true
+    }
+
+    fun closeStickerSheet() {
+        _isStickerSheetOpened.value = false
+    }
+
     companion object {
         val Saver = listSaver<MementoStateHolder, MementoState>(
             save = { it.state.value },
@@ -80,27 +91,20 @@ fun MementoStateHolder.createText(
     _state.update { it + component }
 }
 
-fun MementoStateHolder.createImage(offset: Offset) {
+fun MementoStateHolder.createImage(
+    offset: Offset,
+    imageCacheKey: String,
+    contentDescription: String? = null
+) {
     // TODO : Must Implement Image
     val component = MementoState.Image(
         id = state.value.size + 1,
-        offsetX = 0f,
-        offsetY = 0f,
+        offsetX = offset.x,
+        offsetY = offset.y,
         scale = 1f,
-        rotation = 0f
-    )
-
-    _state.update { it + component }
-}
-
-fun MementoStateHolder.createSticker(offset: Offset) {
-    // TODO : Must Implement Sticker
-    val component = MementoState.Sticker(
-        id = state.value.size + 1,
-        offsetX = 0f,
-        offsetY = 0f,
-        scale = 1f,
-        rotation = 0f
+        rotation = 0f,
+        key = imageCacheKey,
+        contentDescription = contentDescription
     )
 
     _state.update { it + component }

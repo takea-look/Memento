@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.takealook.memento.sticker.MementoSticker
 import com.takealook.memento.sticker.sticker
 
 class MainActivity : ComponentActivity() {
@@ -17,19 +18,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MementoEditor(
-                stickerBuilder = {
-                    (0..10).forEach { _ ->
-                        sticker {
-                            Image(
-                                modifier = Modifier,
-                                painter = painterResource(com.takealook.memento.R.drawable.ic_glasses),
-                                contentDescription = null
-                            )
-                        }
-                    }
+            MementoEditor {
+                (0..10).forEach {
+                    sticker(
+                        MementoSticker(
+                            key = com.takealook.memento.R.drawable.ic_glasses.toString(),
+                            image = com.takealook.memento.R.drawable.ic_glasses,
+                            contentDescription = "glasses icon"
+                        )
+                    )
                 }
-            )
+            }
         }
     }
 }
@@ -39,3 +38,4 @@ class MainActivity : ComponentActivity() {
 fun AppAndroidPreview() {
     App()
 }
+
