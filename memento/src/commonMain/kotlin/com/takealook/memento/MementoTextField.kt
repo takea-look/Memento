@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.TextUnit
@@ -17,6 +18,7 @@ fun MementoTextField(
     state: MementoState.Text,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle.Default,
+    onFocused: () -> Unit = {},
 ) {
     val textState = rememberTextFieldState(state.text)
     val baseFontSize = textStyle.fontSize.takeIf(TextUnit::isSpecified) ?: 50.sp
@@ -26,7 +28,13 @@ fun MementoTextField(
         BasicTextField(
             state = textState,
             textStyle = textStyle.copy(fontSize = scaledFontSize, background = Color.Red),
-            modifier = Modifier.wrapContentWidth()
+            modifier = Modifier
+                .wrapContentWidth()
+                .onFocusChanged {
+                    if (it.isFocused) {
+                        onFocused()
+                    }
+                }
         )
     }
 }

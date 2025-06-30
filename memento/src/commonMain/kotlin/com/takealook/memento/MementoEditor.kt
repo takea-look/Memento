@@ -1,20 +1,31 @@
 package com.takealook.memento
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -39,9 +50,17 @@ internal fun MementoEditor(
         .isStickerSheetOpened
         .collectAsStateWithLifecycle()
 
+    val isTextFocused by stateHolder
+        .isTextFocused
+        .collectAsStateWithLifecycle()
+
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Box(
         modifier = modifier
             .fillMaxSize()
+            .imePadding()
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
@@ -72,8 +91,19 @@ internal fun MementoEditor(
                             modifier = Modifier
                                 .mementoGesture(it, stateHolder),
                             state = it,
+                            onFocused = {
+                                val paddingTop = 16.dp.value
+                                val savedOffset = Offset(it.offsetX, it.offsetY - paddingTop)
+                                stateHolder.executeTextFocus(
+                                    it.id,
+                                    savedOffset,
+                                    it.rotation,
+                                    it.scale
+                                )
+                            }
                         )
                     }
+
                     is MementoState.Image -> {
                         AsyncImage(
                             modifier = Modifier
@@ -86,6 +116,16 @@ internal fun MementoEditor(
                 }
             }
         }
+
+        if (isTextFocused) {
+            FocusModeScreen(
+                onTouchOutSide = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    stateHolder.releaseFocus()
+                }
+            )
+        }
     }
 
     if (showStickerSheet) {
@@ -94,6 +134,30 @@ internal fun MementoEditor(
             builder = stickerBuilder
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun FocusModeScreen(
+    modifier: Modifier = Modifier,
+    onTouchOutSide: () -> Unit = {}
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.3f))
+            .clickable(enabled = true, onClick = onTouchOutSide)
+    ) {
+        Text("완료", modifier = Modifier.align(Alignment.TopEnd))
+    }
+}
+
+@Preview
+@Composable
+fun FocusModeScreenPreview() {
+    FocusModeScreen(
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 @Preview
