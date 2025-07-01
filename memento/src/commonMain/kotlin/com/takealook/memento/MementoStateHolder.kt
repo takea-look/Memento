@@ -91,9 +91,68 @@ class MementoStateHolder {
     }
 
     companion object {
-        val Saver = listSaver<MementoStateHolder, MementoState>(
-            save = { it.state.value },
-            restore = { MementoStateHolder().apply { _state.value = it } }
+        private val TYPE = "type"
+        private val ID = "id"
+        private val OFFSET_X = "offsetX"
+        private val OFFSET_Y = "offsetY"
+        private val SCALE = "scale"
+        private val ROTATION = "rotation"
+        private val KEY = "key"
+        private val CONTENT_DESCRIPTION = "contentDescription"
+        private val TEXT = "text"
+
+        val Saver = listSaver<MementoStateHolder, Map<String, Any?>>(
+            save = {
+                it.state.value.map {
+                    when(it) {
+                        is MementoState.Text -> mapOf(
+                            TYPE to "Text",
+                            ID to it.id,
+                            OFFSET_X to it.offsetX,
+                            OFFSET_Y to it.offsetY,
+                            SCALE to it.scale,
+                            ROTATION to it.rotation,
+                            TEXT to it.text
+                        )
+                        is MementoState.Image -> mapOf(
+                            TYPE to "Image",
+                            ID to it.id,
+                            OFFSET_X to it.offsetX,
+                            OFFSET_Y to it.offsetY,
+                            SCALE to it.scale,
+                            ROTATION to it.rotation,
+                            KEY to it.key,
+                            CONTENT_DESCRIPTION to it.contentDescription
+                        )
+                    }
+                }
+            },
+            restore = { list ->
+                val mappedState = list.map {
+                    when(it[TYPE]) {
+                        "Text" -> MementoState.Text(
+                            id = it[ID] as Int,
+                            offsetX = it[OFFSET_X] as Float,
+                            offsetY = it[OFFSET_Y] as Float,
+                            scale = it[SCALE] as Float,
+                            rotation = it[ROTATION] as Float,
+                            text = it[TEXT] as String,
+                        )
+
+                        "Image" -> MementoState.Image(
+                            id = it[ID] as Int,
+                            offsetX = it[OFFSET_X] as Float,
+                            offsetY = it[OFFSET_Y] as Float,
+                            scale = it[SCALE] as Float,
+                            rotation = it[ROTATION] as Float,
+                            key = it[KEY] as String,
+                            contentDescription = it[CONTENT_DESCRIPTION] as String?
+                        )
+                        else -> throw IllegalArgumentException()
+                    }
+                }
+                MementoStateHolder().apply { _state.value = mappedState }
+            }
         )
     }
 }
