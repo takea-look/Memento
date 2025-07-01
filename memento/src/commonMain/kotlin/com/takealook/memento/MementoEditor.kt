@@ -149,9 +149,7 @@ internal fun FocusModeScreen(
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.3f))
             .clickable(enabled = true, onClick = onTouchOutSide)
-    ) {
-        Text("완료", modifier = Modifier.align(Alignment.TopEnd))
-    }
+    )
 }
 
 @Preview
