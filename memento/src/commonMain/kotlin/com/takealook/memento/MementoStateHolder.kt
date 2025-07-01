@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -38,8 +39,8 @@ class MementoStateHolder {
             if (it.id == id) {
                 focusId = id
                 it.updateLayout(
-                    offsetX = 0f,
-                    offsetY = 0f
+                    offsetX = 50.dp.value,
+                    offsetY = 500.dp.value
                 ).updateRotation(0f).updateScale(1f)
             } else it
         }
