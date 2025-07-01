@@ -12,8 +12,74 @@ class MementoStateHolder {
     internal val _state: MutableStateFlow<List<MementoState>> = MutableStateFlow(emptyList())
     val state = _state.asStateFlow()
 
+    internal var focusId: Int? = null
+    internal var savedOffset: Offset? = null
+    internal var savedRotation: Float? = null
+    internal var savedScale: Float? = null
+
+    private val _isTextFocused = MutableStateFlow(false)
+    val isTextFocused = _isTextFocused.asStateFlow()
+
     private val _isStickerSheetOpened = MutableStateFlow(false)
     val isStickerSheetOpened = _isStickerSheetOpened.asStateFlow()
+
+    fun executeTextFocus(
+        id: Int,
+        currentOffset: Offset,
+        currentRotation: Float,
+        currentScale: Float
+    ) {
+        savedOffset = currentOffset
+        savedRotation = currentRotation
+        savedScale = currentScale
+
+        val components = state.value.toMutableList()
+        val updatedComponents = components.map {
+            if (it.id == id) {
+                focusId = id
+                it.updateLayout(
+                    offsetX = 0f,
+                    offsetY = 0f
+                ).updateRotation(0f).updateScale(1f)
+            } else it
+        }
+
+        components.clear()
+        components.addAll(updatedComponents)
+        _state.value = components
+        _isTextFocused.value = true
+    }
+
+    fun releaseFocus() {
+        if (savedOffset == null) return
+        val components = state.value.toMutableList()
+        val updatedComponents = components.map {
+            if (it.id == focusId!!) {
+                it.updateLayout(
+                    offsetX = savedOffset!!.x,
+                    offsetY = savedOffset!!.y
+                ).updateRotation(savedRotation!!).updateScale(savedScale!!)
+            } else it
+        }
+        savedOffset = null
+        savedRotation = null
+        savedScale = null
+        focusId = null
+        components.clear()
+        components.addAll(updatedComponents)
+        _state.value = components
+        _isTextFocused.value = false
+    }
+
+    fun bringToFront(id: Int) {
+        val components = state.value.toMutableList()
+        val index = components.indexOfFirst { it.id == id }
+        if (index != -1) {
+            val component = components.removeAt(index)
+            components.add(component)
+            _state.value = components
+        }
+    }
 
     fun openStickerSheet() {
         _isStickerSheetOpened.value = true
@@ -73,6 +139,8 @@ fun MementoStateHolder.updateLayout(id: Int, dragAmount: Offset) {
     components.clear()
     components.addAll(updatedComponents)
     _state.value = components
+
+    bringToFront(id)
 }
 
 fun MementoStateHolder.createText(
