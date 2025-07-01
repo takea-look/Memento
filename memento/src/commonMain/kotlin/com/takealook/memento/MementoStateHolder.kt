@@ -71,6 +71,16 @@ class MementoStateHolder {
         _isTextFocused.value = false
     }
 
+    fun bringToFront(id: Int) {
+        val components = state.value.toMutableList()
+        val index = components.indexOfFirst { it.id == id }
+        if (index != -1) {
+            val component = components.removeAt(index)
+            components.add(component)
+            _state.value = components
+        }
+    }
+
     fun openStickerSheet() {
         _isStickerSheetOpened.value = true
     }
@@ -129,6 +139,8 @@ fun MementoStateHolder.updateLayout(id: Int, dragAmount: Offset) {
     components.clear()
     components.addAll(updatedComponents)
     _state.value = components
+
+    bringToFront(id)
 }
 
 fun MementoStateHolder.createText(

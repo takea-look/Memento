@@ -26,6 +26,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.takealook.memento.resources.Res
@@ -82,12 +83,14 @@ internal fun MementoEditor(
             )
         }
 
-        components.forEach {
+        components.forEachIndexed { index, it ->
             key(it.id) {
                 when (it) {
                     is MementoState.Text -> {
+                        val zIndex = if (isTextFocused && stateHolder.focusId == it.id) 100F else 0f
                         MementoTextField(
                             modifier = Modifier
+                                .zIndex(zIndex)
                                 .mementoGesture(it, stateHolder),
                             state = it,
                             onFocused = {
