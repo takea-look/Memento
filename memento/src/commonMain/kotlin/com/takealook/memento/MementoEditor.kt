@@ -3,6 +3,7 @@ package com.takealook.memento
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -62,6 +61,16 @@ internal fun MementoEditor(
             .fillMaxSize()
             .imePadding()
             .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, rotationDelta ->
+                    val focused = components.lastOrNull() ?: return@detectTransformGestures
+                    stateHolder.updateRotation(focused.id, rotationDelta)
+
+                    stateHolder.updateLayout(focused.id, pan)
+
+                    stateHolder.updateScale(focused.id, zoom)
+                }
+            }
+            .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
                         stateHolder.createText(tapOffset)
@@ -73,6 +82,7 @@ internal fun MementoEditor(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
+                .zIndex(998F)
         ) {
             Spacer(modifier = Modifier.weight(1f))
             MementoButton(
@@ -87,7 +97,7 @@ internal fun MementoEditor(
             key(it.id) {
                 when (it) {
                     is MementoState.Text -> {
-                        val zIndex = if (isTextFocused && stateHolder.focusId == it.id) 100F else 0f
+                        val zIndex = if (isTextFocused && stateHolder.focusId == it.id) 1000F else 0f
                         MementoTextField(
                             modifier = Modifier
                                 .zIndex(zIndex)
@@ -102,6 +112,9 @@ internal fun MementoEditor(
                                     it.rotation,
                                     it.scale
                                 )
+                            },
+                            onKeyDown = {
+                                stateHolder.bringToFront(it.id)
                             }
                         )
                     }
@@ -121,6 +134,7 @@ internal fun MementoEditor(
 
         if (isTextFocused) {
             FocusModeScreen(
+                modifier = Modifier.zIndex(999F),
                 onTouchOutSide = {
                     focusManager.clearFocus()
                     keyboardController?.hide()

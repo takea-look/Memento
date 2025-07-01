@@ -4,7 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,9 +20,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlin.math.roundToInt
 
 internal fun Modifier.mementoGesture(
-    state: MementoState,
+    state: MementoState?,
     holder: MementoStateHolder
 ) = composed {
+    if (state == null) return@composed this
+
     val animatedOffset = remember {
         Animatable(
             Offset(
@@ -60,13 +62,11 @@ internal fun Modifier.mementoGesture(
             )
         }
         .pointerInput(Unit) {
-            detectTransformGestures { _, pan, zoom, rotationDelta ->
-                holder.updateRotation(state.id, rotationDelta)
-
-                holder.updateLayout(state.id, pan)
-
-                holder.updateScale(state.id, zoom)
-            }
+            detectTapGestures(
+                onPress = {
+                    holder.bringToFront(state.id)
+                }
+            )
         }.graphicsLayer {
             rotationZ = state.rotation
             transformOrigin = TransformOrigin.Center
