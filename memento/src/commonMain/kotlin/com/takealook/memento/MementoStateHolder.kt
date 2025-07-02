@@ -48,7 +48,11 @@ class MementoStateHolder {
         components.clear()
         components.addAll(updatedComponents)
         _state.value = components
-        _isTextFocused.value = true
+        requestFocusMode(true)
+    }
+
+    fun requestFocusMode(enabled: Boolean = true) {
+        _isTextFocused.value = enabled
     }
 
     fun releaseFocus() {
@@ -205,7 +209,7 @@ fun MementoStateHolder.updateLayout(id: Int, dragAmount: Offset) {
 
 fun MementoStateHolder.createText(
     offset: Offset,
-    initialText: String = "Text"
+    initialText: String
 ) {
     val component = MementoState.Text(
         id = state.value.size + 1,
@@ -224,7 +228,6 @@ fun MementoStateHolder.createImage(
     imageCacheKey: String,
     contentDescription: String? = null
 ) {
-    // TODO : Must Implement Image
     val component = MementoState.Image(
         id = state.value.size + 1,
         offsetX = offset.x,
