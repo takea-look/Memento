@@ -10,21 +10,36 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -34,6 +49,8 @@ import com.takealook.memento.sticker.Key
 import com.takealook.memento.sticker.MementoStickerBuilder
 import com.takealook.memento.sticker.MementoStickerListSheet
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+internal val focusOffset = Offset(x = 50.dp.value, y = 500.dp.value)
 
 @Composable
 internal fun MementoEditor(
@@ -53,8 +70,25 @@ internal fun MementoEditor(
         .isTextFocused
         .collectAsStateWithLifecycle()
 
+    var requestText by rememberSaveable { mutableStateOf(false) }
+
+    val newTextState = rememberTextFieldState("", TextRange(12321321))
+    val newTextFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+
+    LaunchedEffect(newTextState) {
+        if (newTextState.text.isEmpty()) {
+            newTextState.setTextAndPlaceCursorAtEnd("")
+        }
+    }
+
+    LaunchedEffect(requestText) {
+        if (requestText) {
+            newTextFocusRequester.requestFocus()
+        }
+    }
 
     Box(
         modifier = modifier
@@ -73,7 +107,8 @@ internal fun MementoEditor(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
-                        stateHolder.createText(tapOffset)
+                        requestText = true
+                        stateHolder.requestFocusMode(true)
                     }
                 )
             }
@@ -90,6 +125,20 @@ internal fun MementoEditor(
                 onClick = stateHolder::openStickerSheet,
                 icon = Res.drawable.ic_sticker,
                 contentDescription = "sticker icon"
+            )
+        }
+
+        if (requestText) {
+            MementoTextField(
+                state = newTextState,
+                modifier = Modifier
+                    .offset { IntOffset(x = focusOffset.x.toInt(), y = focusOffset.y.toInt()) }
+                    .zIndex(1000F)
+                    .focusRequester(focusRequester = newTextFocusRequester),
+                textStyle = TextStyle.Default.copy(
+                    fontSize = 50.sp,
+                    background = Color.Red
+                )
             )
         }
 
@@ -138,7 +187,20 @@ internal fun MementoEditor(
                 onTouchOutSide = {
                     focusManager.clearFocus()
                     keyboardController?.hide()
-                    stateHolder.releaseFocus()
+                    if (requestText) {
+                        requestText = false
+                        stateHolder.requestFocusMode(false)
+                        if (newTextState.text.isNotEmpty()) {
+                            stateHolder.createText(
+                                focusOffset,
+                                initialText = newTextState.text.toString()
+                            )
+                        }
+                        newTextFocusRequester.freeFocus()
+                        newTextState.clearText()
+                    } else {
+                        stateHolder.releaseFocus()
+                    }
                 }
             )
         }
