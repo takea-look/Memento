@@ -4,7 +4,9 @@ import Memento
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        MementoEditorViewControllerKt.MementoEditorViewController { builder in
+        MementoEditorViewControllerKt.MementoEditorViewController(
+            mainContent: UIImage(named: "ic_milk")!
+        ) { builder in
             let sticker = MementoSticker(
                 key: "ic_glasses",
                 image: UIImage(named: "ic_glasses")!,

@@ -2,6 +2,7 @@ package com.takealook.memento
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -21,7 +22,8 @@ import com.takealook.memento.sticker.sticker
 
 @Composable
 fun MementoEditor(
-    builder: MementoStickerBuilder<MementoSticker<Any>>.() -> Unit
+    mainContent: @Composable BoxScope.() -> Unit,
+    stickerBuilder: MementoStickerBuilder<MementoSticker<Any>>.() -> Unit
 ) {
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
@@ -38,12 +40,13 @@ fun MementoEditor(
 
     val stickers = remember {
         MementoStickerBuilder<MementoSticker<Any>>()
-            .apply(builder)
+            .apply(stickerBuilder)
             .build()
     }
 
     MementoEditor(
         stateHolder = holder,
+        mainContent = mainContent,
         modifier = Modifier.fillMaxSize()
     ) {
         stickers.forEach { sticker ->
