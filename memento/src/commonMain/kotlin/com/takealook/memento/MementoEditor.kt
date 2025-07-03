@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
@@ -56,6 +58,7 @@ internal val focusOffset = Offset(x = 50.dp.value, y = 500.dp.value)
 internal fun MementoEditor(
     modifier: Modifier = Modifier,
     stateHolder: MementoStateHolder = rememberMementoStateHolder(),
+    mainContent: @Composable BoxScope.() -> Unit = {},
     stickerBuilder: MementoStickerBuilder<@Composable LazyGridItemScope.() -> Unit>.() -> Unit = {},
 ) {
     val components by stateHolder
@@ -113,6 +116,15 @@ internal fun MementoEditor(
                 )
             }
     ) {
+        // Main Content Image
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            content = mainContent
+        )
+
+        // Tools List
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -128,6 +140,7 @@ internal fun MementoEditor(
             )
         }
 
+        // TextField for Edit Mode
         if (requestText) {
             MementoTextField(
                 state = newTextState,
@@ -142,6 +155,7 @@ internal fun MementoEditor(
             )
         }
 
+        // Components
         components.forEachIndexed { index, it ->
             key(it.id) {
                 when (it) {

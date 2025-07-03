@@ -1,6 +1,7 @@
 package com.takealook.memento.sticker
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import platform.UIKit.UIImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun MementoEditorViewController(
+    mainContent: UIImage,
     stickerBuilder: MementoStickerBuilder<MementoSticker<UIImage>>.() -> Unit = {}
 ) = ComposeUIViewController {
     setSingletonImageLoaderFactory { context ->
@@ -45,7 +47,16 @@ fun MementoEditorViewController(
     val context = LocalPlatformContext.current
     val holder = rememberMementoStateHolder()
 
-    MementoEditor(stateHolder = holder) {
+    MementoEditor(
+        stateHolder = holder,
+        mainContent = {
+            AsyncImage(
+                model = mainContent.getBytes(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    ) {
         stickers.forEach { sticker ->
             sticker {
                 val image = ImageRequest.Builder(context)
