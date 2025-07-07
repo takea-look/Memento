@@ -34,7 +34,14 @@ fun MementoTextField(
 ) {
     val baseFontSize = textStyle.fontSize.takeIf(TextUnit::isSpecified) ?: 50.sp
     val scaledFontSize = (baseFontSize.value * state.scale).sp
-    val textStyle = textStyle.copy(fontSize = scaledFontSize, background = Color.Red)
+    val colorScheme = remember(state.seedColor) {
+        getMementoColorScheme(Color(state.seedColor))
+    }
+    val textStyle = textStyle.copy(
+        fontSize = scaledFontSize,
+        color = colorScheme.onPrimaryContainer,
+        background = colorScheme.primaryContainer
+    )
     val textState = rememberTextFieldState(state.text)
 
     MementoTextField(

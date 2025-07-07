@@ -45,6 +45,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.serialization)
             implementation(libs.coil.compose)
+            implementation(libs.materialKolor)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

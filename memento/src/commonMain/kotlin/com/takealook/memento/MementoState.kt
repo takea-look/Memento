@@ -1,5 +1,6 @@
 package com.takealook.memento
 
+import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.Serializable
 
 interface Layout {
@@ -53,9 +54,16 @@ sealed interface MementoState : Layout, Identifiable {
         override val offsetX: Float,
         override val offsetY: Float,
         override val scale: Float,
-        override val rotation: Float
+        override val rotation: Float,
+        val seedColor: ULong,
     ) : MementoState {
+
+        fun updateTextColor(seedColor: ULong): MementoState {
+            return copy(seedColor = seedColor)
+        }
+
         override fun updateLayout(offsetX: Float, offsetY: Float): MementoState {
+            Color(Color.Blue.value)
             return copy(offsetX = offsetX, offsetY = offsetY)
         }
 

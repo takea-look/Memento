@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -104,6 +105,7 @@ class MementoStateHolder {
         private val KEY = "key"
         private val CONTENT_DESCRIPTION = "contentDescription"
         private val TEXT = "text"
+        private val COLOR = "color"
 
         val Saver = listSaver<MementoStateHolder, Map<String, Any?>>(
             save = {
@@ -116,7 +118,8 @@ class MementoStateHolder {
                             OFFSET_Y to it.offsetY,
                             SCALE to it.scale,
                             ROTATION to it.rotation,
-                            TEXT to it.text
+                            TEXT to it.text,
+                            COLOR to it.seedColor
                         )
                         is MementoState.Image -> mapOf(
                             TYPE to "Image",
@@ -141,6 +144,7 @@ class MementoStateHolder {
                             scale = it[SCALE] as Float,
                             rotation = it[ROTATION] as Float,
                             text = it[TEXT] as String,
+                            seedColor = it[COLOR] as ULong
                         )
 
                         "Image" -> MementoState.Image(
@@ -161,55 +165,55 @@ class MementoStateHolder {
     }
 }
 
-fun MementoStateHolder.updateRotation(id: Int, rotationDelta: Float): Float {
-    var updatedRotation = 0f
+@Suppress("UNCHECKED_CAST")
+fun <T : MementoState> MementoStateHolder.update(id: Int, onUpdate: (T) -> MementoState) {
     val components = state.value.toMutableList()
     val updatedComponents = components.map {
         if (it.id == id) {
-            updatedRotation = it.rotation + rotationDelta
-            it.updateRotation(updatedRotation)
+            onUpdate(it as T)
         } else it
-        }
+    }
     components.clear()
     components.addAll(updatedComponents)
     _state.value = components
+}
 
+fun MementoStateHolder.updateText(id: Int, color: Color) {
+    update<MementoState.Text>(id) {
+        it.updateTextColor(color.value)
+    }
+}
+
+fun MementoStateHolder.updateRotation(id: Int, rotationDelta: Float): Float {
+    var updatedRotation = 0f
+
+    update<MementoState>(id) {
+        updatedRotation = it.rotation + rotationDelta
+        it.updateRotation(updatedRotation)
+    }
     return updatedRotation
 }
 
 fun MementoStateHolder.updateScale(id: Int, scale: Float) {
-    val components = state.value.toMutableList()
-    val updatedComponents = components.map {
-        if (it.id == id) {
-            it.updateScale(it.scale * scale)
-        } else it
+    update<MementoState>(id) {
+        it.updateScale(it.scale * scale)
     }
-    components.clear()
-    components.addAll(updatedComponents)
-    _state.value = components
 }
 
 fun MementoStateHolder.updateLayout(id: Int, dragAmount: Offset) {
-    val components = state.value.toMutableList()
-    val updatedComponents = components.map {
-        if (it.id == id) {
-            it.updateLayout(
-                offsetX = it.offsetX + dragAmount.x,
-                offsetY = it.offsetY + dragAmount.y
-            )
-        } else it
+    update<MementoState>(id) {
+        it.updateLayout(
+            offsetX = it.offsetX + dragAmount.x,
+            offsetY = it.offsetY + dragAmount.y
+        )
     }
-
-    components.clear()
-    components.addAll(updatedComponents)
-    _state.value = components
-
     bringToFront(id)
 }
 
 fun MementoStateHolder.createText(
     offset: Offset,
-    initialText: String
+    initialText: String,
+    seedColor: Color
 ) {
     val component = MementoState.Text(
         id = state.value.size + 1,
@@ -217,7 +221,8 @@ fun MementoStateHolder.createText(
         offsetX = offset.x,
         offsetY = offset.y,
         scale = 1f,
-        rotation = 0f
+        rotation = 0f,
+        seedColor = seedColor.value
     )
 
     _state.update { it + component }
