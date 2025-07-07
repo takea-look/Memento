@@ -15,6 +15,8 @@ junit = "4.13.2"
 kotlin = "2.2.0"
 serialization = "1.8.1"
 coil = "3.2.0"
+materialKolor = "3.0.0-beta07"
+
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -34,6 +36,8 @@ kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-
 # Coil
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+
+materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
