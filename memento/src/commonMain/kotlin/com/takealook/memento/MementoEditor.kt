@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -165,8 +164,8 @@ internal fun MementoEditor(
                         .focusRequester(focusRequester = newTextFocusRequester),
                     textStyle = TextStyle.Default.copy(
                         color = newTextColorScheme.primary,
-                        fontSize = 50.sp,
-                        background = newTextColorScheme.primaryContainer
+                        fontSize = 24.sp,
+                        background = newTextColorScheme.primaryContainer,
                     )
                 )
             }
