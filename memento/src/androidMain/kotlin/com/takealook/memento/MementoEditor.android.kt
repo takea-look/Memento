@@ -16,64 +16,16 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.util.DebugLogger
-import com.takealook.memento.sticker.MementoSticker
-import com.takealook.memento.sticker.MementoStickerBuilder
-import com.takealook.memento.sticker.sticker
 
 @Composable
 fun MementoEditor(
     mainContent: @Composable BoxScope.() -> Unit,
-    stickerBuilder: MementoStickerBuilder<MementoSticker<Any>>.() -> Unit
 ) {
-    setSingletonImageLoaderFactory { context ->
-        ImageLoader.Builder(context)
-            .components {
-                add(StickerKeyFetcher.Factory())
-            }
-            .logger(DebugLogger())
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .diskCachePolicy(CachePolicy.DISABLED)
-            .crossfade(true)
-            .build()
-    }
     val holder = rememberMementoStateHolder()
-
-    val stickers = remember {
-        MementoStickerBuilder<MementoSticker<Any>>()
-            .apply(stickerBuilder)
-            .build()
-    }
 
     MementoEditor(
         stateHolder = holder,
         mainContent = mainContent,
         modifier = Modifier.fillMaxSize()
-    ) {
-        stickers.forEach { sticker ->
-            sticker {
-                val context = LocalPlatformContext.current
-                val image = ImageRequest.Builder(context)
-                    .data(sticker.image)
-                    .memoryCacheKey(sticker.cacheKey.toString())
-                    .diskCacheKey(sticker.cacheKey.toString())
-                    .build()
-
-                Box(
-                    modifier = Modifier.clickable {
-                        holder.createImage(
-                            offset = Offset(0f, 0f),
-                            imageCacheKey = sticker.cacheKey.toString(),
-                            contentDescription = sticker.contentDescription
-                        )
-                        holder.closeStickerSheet()
-                    }
-                ) {
-                    AsyncImage(
-                        model = image,
-                        contentDescription = sticker.contentDescription,
-                    )
-                }
-            }
-        }
-    }
+    )
 }

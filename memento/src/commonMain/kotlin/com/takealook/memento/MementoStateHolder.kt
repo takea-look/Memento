@@ -22,9 +22,6 @@ class MementoStateHolder {
     private val _isTextFocused = MutableStateFlow(false)
     val isTextFocused = _isTextFocused.asStateFlow()
 
-    private val _isStickerSheetOpened = MutableStateFlow(false)
-    val isStickerSheetOpened = _isStickerSheetOpened.asStateFlow()
-
     fun executeTextFocus(
         id: Int,
         currentOffset: Offset,
@@ -85,14 +82,6 @@ class MementoStateHolder {
             components.add(component)
             _state.value = components
         }
-    }
-
-    fun openStickerSheet() {
-        _isStickerSheetOpened.value = true
-    }
-
-    fun closeStickerSheet() {
-        _isStickerSheetOpened.value = false
     }
 
     companion object {
