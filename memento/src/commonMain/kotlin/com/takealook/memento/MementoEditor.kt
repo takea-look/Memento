@@ -48,12 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import com.takealook.memento.resources.Res
-import com.takealook.memento.resources.ic_sticker
-import com.takealook.memento.sticker.Key
-import com.takealook.memento.sticker.MementoStickerBuilder
-import com.takealook.memento.sticker.MementoStickerListSheet
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 internal val focusOffset = Offset(x = 50.dp.value, y = 500.dp.value)
@@ -63,14 +57,9 @@ internal fun MementoEditor(
     modifier: Modifier = Modifier,
     stateHolder: MementoStateHolder = rememberMementoStateHolder(),
     mainContent: @Composable BoxScope.() -> Unit = {},
-    stickerBuilder: MementoStickerBuilder<@Composable LazyGridItemScope.() -> Unit>.() -> Unit = {},
 ) {
     val components by stateHolder
         .state
-        .collectAsStateWithLifecycle()
-
-    val showStickerSheet by stateHolder
-        .isStickerSheetOpened
         .collectAsStateWithLifecycle()
 
     val isTextFocused by stateHolder
@@ -145,13 +134,6 @@ internal fun MementoEditor(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .zIndex(998F)
             ) {
-                Spacer(modifier = Modifier.weight(1f))
-                MementoButton(
-                    modifier = Modifier.size(50.dp),
-                    onClick = stateHolder::openStickerSheet,
-                    icon = Res.drawable.ic_sticker,
-                    contentDescription = "sticker icon"
-                )
             }
 
             // TextField for Edit Mode
@@ -200,13 +182,7 @@ internal fun MementoEditor(
                         }
 
                         is MementoState.Image -> {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .mementoGesture(it, stateHolder)
-                                    .scale(it.scale),
-                                model = Key(it.key),
-                                contentDescription = it.contentDescription,
-                            )
+                            // TODO: redesign the image attachment policy
                         }
                     }
                 }
@@ -249,13 +225,6 @@ internal fun MementoEditor(
                     }
                 )
             }
-        }
-
-        if (showStickerSheet) {
-            MementoStickerListSheet(
-                onDismiss = stateHolder::closeStickerSheet,
-                builder = stickerBuilder
-            )
         }
     }
 }
