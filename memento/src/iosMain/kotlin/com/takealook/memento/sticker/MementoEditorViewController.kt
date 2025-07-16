@@ -1,5 +1,6 @@
 package com.takealook.memento.sticker
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Modifier
@@ -23,6 +24,8 @@ fun MementoEditorViewController(
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth()
             )
-        }
+        },
+        modifier = Modifier.fillMaxSize(),
+        onImageCaptured = { /** TODO : must image capture logic be implemented */ }
     )
 }
