@@ -22,6 +22,9 @@ class MementoStateHolder {
     private val _isTextFocused = MutableStateFlow(false)
     val isTextFocused = _isTextFocused.asStateFlow()
 
+    private val _isCaptureRequested = MutableStateFlow(false)
+    internal val isCaptureRequested = _isCaptureRequested.asStateFlow()
+
     fun executeTextFocus(
         id: Int,
         currentOffset: Offset,
@@ -82,6 +85,14 @@ class MementoStateHolder {
             components.add(component)
             _state.value = components
         }
+    }
+
+    fun requestCapture() {
+        _isCaptureRequested.value = true
+    }
+
+    internal fun finishCapture() {
+        _isCaptureRequested.value = false
     }
 
     companion object {
