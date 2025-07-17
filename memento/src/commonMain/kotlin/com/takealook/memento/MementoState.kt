@@ -1,5 +1,6 @@
 package com.takealook.memento
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.Serializable
 
@@ -18,10 +19,6 @@ interface Identifiable {
     val id: Int
 }
 
-interface Cacheable {
-    val key: String
-}
-
 sealed interface MementoState : Layout, Identifiable {
 
     @Serializable
@@ -31,9 +28,8 @@ sealed interface MementoState : Layout, Identifiable {
         override val offsetY: Float,
         override val scale: Float,
         override val rotation: Float,
-        override val key: String,
-        val contentDescription: String? = null
-    ) : MementoState, Cacheable {
+        val content: @Composable () -> Unit
+    ) : MementoState {
         override fun updateLayout(offsetX: Float, offsetY: Float): MementoState {
             return copy(offsetX = offsetX, offsetY = offsetY)
         }

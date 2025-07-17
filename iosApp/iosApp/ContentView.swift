@@ -6,15 +6,7 @@ struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         MementoEditorViewControllerKt.MementoEditorViewController(
             mainContent: UIImage(named: "ic_milk")!
-        ) { builder in
-            let sticker = MementoSticker(
-                key: "ic_glasses",
-                image: UIImage(named: "ic_glasses")!,
-                contentDescription: "glasses icon"
-            )
-            
-            builder.sticker(content: sticker)
-        }
+        )
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

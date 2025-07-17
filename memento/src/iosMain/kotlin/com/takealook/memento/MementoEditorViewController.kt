@@ -1,4 +1,4 @@
-package com.takealook.memento.sticker
+package com.takealook.memento
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -6,8 +6,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import coil3.compose.AsyncImage
-import com.takealook.memento.MementoEditor
-import com.takealook.memento.rememberMementoStateHolder
 import platform.UIKit.UIImage
 
 @OptIn(ExperimentalMaterial3Api::class)
