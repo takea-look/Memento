@@ -4,6 +4,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 
 internal fun Modifier.capture(
     isCaptureRequested: Boolean,
+    cropRect: Rect?,
     onCaptured: (ImageBitmap) -> Unit
 ) = composed {
     val graphicsLayer = rememberGraphicsLayer()
@@ -24,8 +26,14 @@ internal fun Modifier.capture(
                 drawLayer(graphicsLayer)
 
                 scope.launch {
-                    val bitmapResult = graphicsLayer.toImageBitmap()
-                    onCaptured(bitmapResult)
+                    val fullBitmap = graphicsLayer.toImageBitmap()
+                    val croppedBitmap = cropImageBitmap(
+                        fullBitmap,
+                        cropRect!!,
+                        this@onDrawWithContent.density
+                    )
+
+                    onCaptured(croppedBitmap)
                 }
             } else {
                 drawContent()
@@ -33,3 +41,9 @@ internal fun Modifier.capture(
         }
     }
 }
+
+expect fun cropImageBitmap(
+    source: ImageBitmap,
+    cropRect: Rect,
+    density: Float
+): ImageBitmap

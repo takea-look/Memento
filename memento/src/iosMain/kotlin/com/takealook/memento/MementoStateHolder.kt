@@ -11,7 +11,7 @@ fun MementoStateHolder.attachImage(
     attachImage {
         AsyncImage(
             model = bytes,
-            contentDescription
+            contentDescription = contentDescription
         )
     }
 }
