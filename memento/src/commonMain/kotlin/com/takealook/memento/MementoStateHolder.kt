@@ -102,7 +102,7 @@ class MementoStateHolder {
         private val OFFSET_Y = "offsetY"
         private val SCALE = "scale"
         private val ROTATION = "rotation"
-        private val KEY = "key"
+        private val IMAGE_BYTES = "key"
         private val CONTENT_DESCRIPTION = "contentDescription"
         private val TEXT = "text"
         private val COLOR = "color"
@@ -128,8 +128,6 @@ class MementoStateHolder {
                             OFFSET_Y to it.offsetY,
                             SCALE to it.scale,
                             ROTATION to it.rotation,
-                            KEY to it.key,
-                            CONTENT_DESCRIPTION to it.contentDescription
                         )
                     }
                 }
@@ -153,8 +151,7 @@ class MementoStateHolder {
                             offsetY = it[OFFSET_Y] as Float,
                             scale = it[SCALE] as Float,
                             rotation = it[ROTATION] as Float,
-                            key = it[KEY] as String,
-                            contentDescription = it[CONTENT_DESCRIPTION] as String?
+                            content = {}
                         )
                         else -> throw IllegalArgumentException()
                     }
@@ -210,7 +207,7 @@ fun MementoStateHolder.updateLayout(id: Int, dragAmount: Offset) {
     bringToFront(id)
 }
 
-fun MementoStateHolder.createText(
+internal fun MementoStateHolder.createText(
     offset: Offset,
     initialText: String,
     seedColor: Color
@@ -228,19 +225,16 @@ fun MementoStateHolder.createText(
     _state.update { it + component }
 }
 
-fun MementoStateHolder.createImage(
-    offset: Offset,
-    imageCacheKey: String,
-    contentDescription: String? = null
+fun MementoStateHolder.attachImage(
+    content: @Composable () -> Unit,
 ) {
     val component = MementoState.Image(
         id = state.value.size + 1,
-        offsetX = offset.x,
-        offsetY = offset.y,
+        offsetX = 0f,
+        offsetY = 0f,
         scale = 1f,
         rotation = 0f,
-        key = imageCacheKey,
-        contentDescription = contentDescription
+        content = content,
     )
 
     _state.update { it + component }

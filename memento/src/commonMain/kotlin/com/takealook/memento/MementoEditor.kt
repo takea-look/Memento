@@ -7,19 +7,15 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,19 +26,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -78,10 +77,11 @@ fun MementoEditor(
     val newTextColorScheme = remember(textSeedColor) {
         getMementoColorScheme(textSeedColor)
     }
+    var newTextOffset by remember { mutableStateOf(Offset.Zero) }
 
+    var imageRect : Rect? by remember { mutableStateOf(null) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    var mainImageSize by remember { mutableStateOf(IntSize.Zero) }
 
     LaunchedEffect(newTextState) {
         if (newTextState.text.isEmpty()) {
@@ -95,149 +95,156 @@ fun MementoEditor(
         }
     }
 
-    Scaffold(
-        contentWindowInsets = ScaffoldDefaults
-            .contentWindowInsets
-            .union(WindowInsets.ime)
-    ) { paddingValues ->
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .capture(
+                isCaptureRequested = isCaptureRequested,
+                cropRect = imageRect
+            ) {
+                onImageCaptured(it)
+                stateHolder.finishCapture()
+            }
+            .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, rotationDelta ->
+                    val focused = components.lastOrNull() ?: return@detectTransformGestures
+                    stateHolder.updateRotation(focused.id, rotationDelta)
+
+                    stateHolder.updateLayout(focused.id, pan)
+
+                    stateHolder.updateScale(focused.id, zoom)
+                }
+            }
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { tapOffset ->
+                        requestText = true
+                        stateHolder.requestFocusMode(true)
+                    }
+                )
+            }
+    ) {
+        // Main Content Image
         Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoom, rotationDelta ->
-                        val focused = components.lastOrNull() ?: return@detectTransformGestures
-                        stateHolder.updateRotation(focused.id, rotationDelta)
-
-                        stateHolder.updateLayout(focused.id, pan)
-
-                        stateHolder.updateScale(focused.id, zoom)
-                    }
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+                .onGloballyPositioned {
+                    imageRect = it.boundsInParent()
                 }
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = { tapOffset ->
-                            requestText = true
-                            stateHolder.requestFocusMode(true)
-                        }
-                    )
-                }
-        ) {
-            // Main Content Image
-            Box(
+            ,
+            content = mainContent
+        )
+
+        // TextField for Edit Mode
+        if (requestText) {
+            MementoTextField(
+                state = newTextState,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center)
-                    .capture(isCaptureRequested) {
-                        onImageCaptured(it)
-                        stateHolder.finishCapture()
-                    }
+                    .offset { IntOffset(focusOffset.x.toInt(), 0) }
+                    .align(Alignment.CenterStart)
                     .onGloballyPositioned {
-                        mainImageSize = it.size
+                        newTextOffset = it.positionInParent()
                     }
-            ) {
-                mainContent()
+                    .zIndex(1000F)
+                    .focusRequester(focusRequester = newTextFocusRequester),
+                textStyle = TextStyle.Default.copy(
+                    color = newTextColorScheme.primary,
+                    fontSize = 24.sp,
+                    background = newTextColorScheme.primaryContainer,
+                )
+            )
+        }
 
-                // TextField for Edit Mode
-                if (requestText) {
-                    MementoTextField(
-                        state = newTextState,
-                        modifier = Modifier
-                            .offset { IntOffset(focusOffset.x.toInt(), mainImageSize.height / 2) }
-                            .zIndex(1000F)
-                            .focusRequester(focusRequester = newTextFocusRequester),
-                        textStyle = TextStyle.Default.copy(
-                            color = newTextColorScheme.primary,
-                            fontSize = 24.sp,
-                            background = newTextColorScheme.primaryContainer,
-                        )
-                    )
-                }
-
-                // Components
-                components.forEachIndexed { index, it ->
-                    key(it.id) {
-                        when (it) {
-                            is MementoState.Text -> {
-                                val isTextFieldFocused = isTextFocused && stateHolder.focusId == it.id
-                                val zIndex = if (isTextFieldFocused) 1000F else 0f
-
-                                MementoTextField(
-                                    modifier = Modifier
-                                        .zIndex(zIndex)
-                                        .mementoGesture(it, stateHolder),
-                                    state = it,
-                                    onFocused = {
-                                        val paddingTop = 16.dp.value
-                                        val savedOffset = Offset(it.offsetX, it.offsetY - paddingTop)
-                                        stateHolder.executeTextFocus(
-                                            it.id,
-                                            savedOffset,
-                                            it.rotation,
-                                            it.scale
-                                        )
-                                    },
-                                    onKeyDown = {
-                                        stateHolder.bringToFront(it.id)
-                                    }
-                                )
-                            }
-
-                            is MementoState.Image -> {
-                                // TODO: redesign the image attachment policy
-                            }
+        if (isTextFocused) {
+            FocusModeScreen(
+                modifier = Modifier.zIndex(999F),
+                onTouchOutSide = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    if (requestText) {
+                        requestText = false
+                        stateHolder.requestFocusMode(false)
+                        if (newTextState.text.isNotEmpty()) {
+                            stateHolder.createText(
+                                Offset(newTextOffset.x, newTextOffset.y),
+                                initialText = newTextState.text.toString(),
+                                seedColor = textSeedColor
+                            )
                         }
+
+                        newTextFocusRequester.freeFocus()
+                        newTextState.clearText()
+                    } else {
+                        stateHolder.releaseFocus()
                     }
                 }
-            }
+            )
 
-            // Tools List
-            Row(
+            MementoRainbowPalette(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .zIndex(998F)
-            ) {
-            }
+                    .align(Alignment.BottomCenter)
+                    .zIndex(1001F),
+                onColorClick = {
+                    if (stateHolder.focusId != null) {
+                        stateHolder.updateText(stateHolder.focusId!!, it)
+                    }
+                    textSeedColor = it
+                }
+            )
+        }
+        // Components
+        components.forEachIndexed { index, it ->
+            key(it.id) {
+                when (it) {
+                    is MementoState.Text -> {
+                        val isTextFieldFocused = isTextFocused && stateHolder.focusId == it.id
+                        val zIndex = if (isTextFieldFocused) 1000F else 0f
 
-            if (isTextFocused) {
-                FocusModeScreen(
-                    modifier = Modifier.zIndex(999F),
-                    onTouchOutSide = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                        if (requestText) {
-                            requestText = false
-                            stateHolder.requestFocusMode(false)
-                            if (newTextState.text.isNotEmpty()) {
-                                stateHolder.createText(
-                                    Offset(focusOffset.x, (mainImageSize.height / 2).toFloat()),
-                                    initialText = newTextState.text.toString(),
-                                    seedColor = textSeedColor
+                        MementoTextField(
+                            modifier = Modifier
+                                .zIndex(zIndex)
+                                .mementoGesture(it, stateHolder),
+                            state = it,
+                            onFocused = {
+                                val paddingTop = 16.dp.value
+                                val savedOffset = Offset(it.offsetX, it.offsetY - paddingTop)
+                                stateHolder.executeTextFocus(
+                                    it.id,
+                                    savedOffset,
+                                    it.rotation,
+                                    it.scale
                                 )
+                            },
+                            onKeyDown = {
+                                stateHolder.bringToFront(it.id)
                             }
-
-                            newTextFocusRequester.freeFocus()
-                            newTextState.clearText()
-                        } else {
-                            stateHolder.releaseFocus()
-                        }
+                        )
                     }
-                )
 
-                MementoRainbowPalette(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .zIndex(1001F),
-                    onColorClick = {
-                        if (stateHolder.focusId != null) {
-                            stateHolder.updateText(stateHolder.focusId!!, it)
-                        }
-                        textSeedColor = it
+                    is MementoState.Image -> {
+                        Box(
+                            modifier = Modifier
+                                .size(150.dp)
+                                .mementoGesture(it, stateHolder)
+                                .scale(it.scale),
+                            content = { it.content() }
+                        )
                     }
-                )
+                }
             }
         }
+
+        // Tools List
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .zIndex(998F)
+        ) {
+        }
+
+
     }
 }
 

@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import coil3.compose.AsyncImage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,8 +52,23 @@ class MainActivity : ComponentActivity() {
                         }
                     )
 
-                    Button(onClick = holder::requestCapture) {
-                        Text("Save To Disk")
+                    Column {
+                        Button(onClick = holder::requestCapture) {
+                            Text("Save To Disk")
+                        }
+
+                        Button(
+                            onClick = {
+                                holder.attachImage {
+                                    AsyncImage(
+                                        model = com.takealook.memento.R.drawable.ic_glasses,
+                                        contentDescription = "glasses icon",
+                                    )
+                                }
+                            }
+                        ) {
+                            Text("Create Image")
+                        }
                     }
                 }
 
@@ -60,6 +77,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 fun ImageBitmap.saveToDisk(
     context: Context,

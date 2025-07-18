@@ -1,4 +1,4 @@
-package com.takealook.memento.sticker
+package com.takealook.memento
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
