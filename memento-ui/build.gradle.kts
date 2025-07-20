@@ -1,5 +1,9 @@
+@file:OptIn(ExperimentalSwiftExportDsl::class)
+
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import org.jetbrains.kotlin.gradle.swiftexport.ExperimentalSwiftExportDsl
 
 plugins {
     alias(libs.plugins.memento.kotlin.multiplatform.shared)
@@ -14,22 +18,27 @@ kotlin {
         }
     }
 
+    val xcFrameworkName = "MementoUi"
+    val xcf = XCFramework(xcFrameworkName)
+
     listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "MementoUi"
+            binaryOption("bundleId", "my.takealook.memento.ui")
+            baseName = xcFrameworkName
             isStatic = true
+            export(projects.mementoCore)
+            xcf.add(this)
         }
     }
 
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.coil.compose)
-            implementation(libs.materialKolor)
-
             api(projects.mementoCore)
         }
     }

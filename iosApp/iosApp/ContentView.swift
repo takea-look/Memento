@@ -1,17 +1,17 @@
 import UIKit
 import SwiftUI
-import Memento
+import MementoUi
 
 struct ComposeView: UIViewControllerRepresentable {
-    var holder : MementoStateHolder!
-    init(_ holder: MementoStateHolder) {
-        self.holder = holder
+    var controller : MementoController!
+    init(_ controller: MementoController) {
+        self.controller = controller
     }
     
     func makeUIViewController(context: Context) -> UIViewController {
          return MementoEditorViewControllerKt.MementoEditorViewController(
             mainContent: UIImage(named: "ic_milk")!,
-            stateHolder: holder,
+            controller: controller,
             onImageCaptured: { image in saveImageToGallery(image) }
         )
     }
@@ -20,16 +20,16 @@ struct ComposeView: UIViewControllerRepresentable {
 }
 
 struct ContentView: View {
-    @State var holder: MementoStateHolder = MementoStateHolder()
+    @State var controller: MementoController = MementoController()
     var body: some View {
-        ComposeView(holder)
+        ComposeView(controller)
                 .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
         
         Button("Attach Sticker") {
-            holder.attachImage(image: UIImage(named: "ic_glasses")!, contentDescription: nil)
+            controller.attachImage(image: UIImage(named: "ic_glasses")!, contentDescription: nil)
         }
         Button("SaveToDisk") {
-            holder.requestCapture()
+            controller.requestCapture()
         }
     }
 }
