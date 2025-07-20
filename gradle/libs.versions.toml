@@ -1,6 +1,6 @@
 [versions]
-agp = "8.7.3"
-android-compileSdk = "35"
+agp = "8.9.3"
+android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "35"
 androidx-activity = "1.10.1"
@@ -10,7 +10,9 @@ androidx-core = "1.16.0"
 androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.9.0"
 androidx-testExt = "1.2.1"
-composeMultiplatform = "1.8.1"
+androidTools = "31.10.1"
+
+composeMultiplatform = "1.8.2"
 junit = "4.13.2"
 kotlin = "2.2.0"
 serialization = "1.8.1"
@@ -39,6 +41,14 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 
 materialKolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 
+# :build-logic
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-multiplatformPlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
+
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -46,3 +56,6 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+memento-kotlin-multiplatform-shared = { id = "memento.kotlin.multiplatform.shared" }
+memento-compose-multiplatform-shared = { id = "memento.compose.multiplatform.shared" }

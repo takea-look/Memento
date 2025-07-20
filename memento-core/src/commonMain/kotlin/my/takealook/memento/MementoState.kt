@@ -2,7 +2,6 @@ package my.takealook.memento
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import kotlinx.serialization.Serializable
 
 /**
  * Interface representing the layout properties of an element.
@@ -81,7 +80,6 @@ sealed interface MementoState : Layout, Identifiable {
      * @property rotation The rotation angle of the image in degrees.
      * @property content A composable function that renders the image content.
      */
-    @Serializable
     data class Image(
         override val id: Int,
         override val offsetX: Float,
@@ -114,7 +112,6 @@ sealed interface MementoState : Layout, Identifiable {
      * @property rotation The rotation angle of the text element.
      * @property seedColor The color of the text, represented as a ULong.
      */
-    @Serializable
     data class Text(
         val text: String,
         override val id: Int,
