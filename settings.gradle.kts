@@ -1,4 +1,4 @@
-rootProject.name = "tkl-memento"
+rootProject.name = "memento"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -29,4 +29,5 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-include(":memento")
+include(":memento-core")
+include(":memento-ui")
