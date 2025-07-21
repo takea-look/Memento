@@ -3,9 +3,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.memento.kotlin.multiplatform.shared)
+    alias(libs.plugins.memento.maven.publish)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-
+    alias(libs.plugins.maven.publish)
 }
 
 kotlin {
@@ -33,4 +34,8 @@ kotlin {
         }
     }
 }
+
+val groupId = "my.takealook.memento"
+val artifactId = "memento-core"
+val version = "0.0.1-dev1"
 
