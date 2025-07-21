@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinSerialization) apply false
+    alias(libs.plugins.maven.publish) apply false
+
     alias(libs.plugins.memento.kotlin.multiplatform.shared) apply false
     alias(libs.plugins.memento.compose.multiplatform.shared) apply false
+    alias(libs.plugins.memento.maven.publish) apply false
 }

@@ -23,6 +23,7 @@ dependencies {
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.compose.multiplatformPlugin)
+    compileOnly(libs.maven.publishPlugin)
 }
 
 gradlePlugin {
@@ -34,6 +35,10 @@ gradlePlugin {
         create("memento.compose.multiplatform.shared") {
             id = "memento.compose.multiplatform.shared"
             implementationClass = "ComposeMultiplatformConventionPlugin"
+        }
+        create("memento.maven.publish") {
+            id = "memento.maven.publish"
+            implementationClass = "MavenPublishingConventionPlugin"
         }
     }
 }

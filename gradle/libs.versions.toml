@@ -1,4 +1,7 @@
 [versions]
+# publish version
+memento = "0.0.1"
+
 agp = "8.9.3"
 android-compileSdk = "36"
 android-minSdk = "24"
@@ -11,6 +14,7 @@ androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.9.0"
 androidx-testExt = "1.2.1"
 androidTools = "31.10.1"
+maven-publish = "0.34.0"
 
 composeMultiplatform = "1.8.2"
 junit = "4.13.2"
@@ -47,6 +51,7 @@ android-tools-common = { group = "com.android.tools", name = "common", version.r
 compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 compose-multiplatformPlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
+maven-publishPlugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "maven-publish" }
 
 
 [plugins]
@@ -56,6 +61,8 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 
 memento-kotlin-multiplatform-shared = { id = "memento.kotlin.multiplatform.shared" }
 memento-compose-multiplatform-shared = { id = "memento.compose.multiplatform.shared" }
+memento-maven-publish = { id = "memento.maven.publish" }

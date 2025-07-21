@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.gradle.swiftexport.ExperimentalSwiftExportDsl
 plugins {
     alias(libs.plugins.memento.kotlin.multiplatform.shared)
     alias(libs.plugins.memento.compose.multiplatform.shared)
+    alias(libs.plugins.memento.maven.publish)
 }
 
 kotlin {
