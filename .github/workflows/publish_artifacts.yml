@@ -52,4 +52,4 @@ jobs:
 
       - name: Publish To Maven Central
         run: |
-          ./gradlew eungabi:publishAndReleaseToMavenCentral --no-configuration-cache
+          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
