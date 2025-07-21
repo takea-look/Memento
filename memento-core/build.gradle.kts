@@ -34,8 +34,3 @@ kotlin {
         }
     }
 }
-
-val groupId = "my.takealook.memento"
-val artifactId = "memento-core"
-val version = "0.0.1-dev1"
-
