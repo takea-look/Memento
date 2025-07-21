@@ -37,7 +37,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.materialKolor)
             implementation(libs.coil.compose)
             api(projects.mementoCore)
         }
