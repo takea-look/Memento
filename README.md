@@ -1,6 +1,6 @@
 # Memento
 
-[![Maven Central](https://img.shields.io/maven-central/v/my.takealook.memento/memento-ui.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:my.takealook.memento)
+[![Maven Central](https://img.shields.io/maven-central/v/my.takealook.memento/memento-ui.svg?label=Maven%20Central)](https://central.sonatype.com/search?q=g:my.takealook.memento)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 
