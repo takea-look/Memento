@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -138,25 +139,12 @@ fun MementoEditor(
                 )
             }
     ) {
-        // Main Content Image
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center)
-                .onGloballyPositioned {
-                    imageRect = it.boundsInParent()
-                }
-            ,
-            content = mainContent
-        )
-
         // TextField for Edit Mode
         if (requestText) {
             MementoTextField(
                 state = newTextState,
                 modifier = Modifier
-                    .offset { IntOffset(focusOffset.x.toInt(), 0) }
-                    .align(Alignment.CenterStart)
+                    .offset { IntOffset(focusOffset.x.toInt(), focusOffset.y.toInt()) }
                     .onGloballyPositioned {
                         newTextOffset = it.positionInParent()
                     }
@@ -169,6 +157,18 @@ fun MementoEditor(
                 )
             )
         }
+
+        // Main Content Image
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+                .onGloballyPositioned {
+                    imageRect = it.boundsInParent()
+                }
+            ,
+            content = mainContent
+        )
 
         if (isTextFocused) {
             FocusModeScreen(
@@ -198,7 +198,8 @@ fun MementoEditor(
             MementoRainbowPalette(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .zIndex(1001F),
+                    .zIndex(1001F)
+                    .imePadding(),
                 onColorClick = {
                     if (stateHolder.focusId != null) {
                         stateHolder.updateText(stateHolder.focusId!!, it)
