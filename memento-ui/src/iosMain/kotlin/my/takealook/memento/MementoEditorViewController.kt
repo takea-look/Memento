@@ -17,7 +17,7 @@ import platform.UIKit.UIImage
 @OptIn(ExperimentalMaterial3Api::class)
 fun MementoEditorViewController(
     mainContent: UIImage,
-    stateHolder: MementoController,
+    controller: MementoController,
     onImageCaptured: (UIImage) -> Unit
 ) = ComposeUIViewController {
     setSingletonImageLoaderFactory { context ->
@@ -28,7 +28,7 @@ fun MementoEditorViewController(
     }
 
     MementoEditor(
-        controller = stateHolder,
+        controller = controller,
         mainContent = {
             AsyncImage(
                 model = mainContent.getBytes(),
