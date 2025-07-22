@@ -28,7 +28,7 @@ fun MementoEditorViewController(
     }
 
     MementoEditor(
-        stateHolder = stateHolder,
+        controller = stateHolder,
         mainContent = {
             AsyncImage(
                 model = mainContent.getBytes(),

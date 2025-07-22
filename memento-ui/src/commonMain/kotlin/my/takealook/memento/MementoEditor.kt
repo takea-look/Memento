@@ -61,26 +61,26 @@ internal val focusOffset = Offset(x = 50.dp.value, y = 500.dp.value)
  * This editor allows users to add and manipulate text and images on a canvas.
  *
  * @param modifier Modifier to be applied to the editor.
- * @param stateHolder The state holder for managing the editor's state.
+ * @param controller The state holder for managing the editor's state.
  * @param onImageCaptured Callback function that is invoked when an image is captured.
  * @param mainContent The main content to be displayed in the editor, typically an image.
  */
 @Composable
 fun MementoEditor(
     modifier: Modifier = Modifier,
-    stateHolder: MementoController = rememberMementoController(),
+    controller: MementoController = rememberMementoController(),
     onImageCaptured: (ImageBitmap) -> Unit = {},
     mainContent: @Composable BoxScope.() -> Unit = {},
 ) {
-    val components by stateHolder
+    val components by controller
         .state
         .collectAsStateWithLifecycle()
 
-    val isTextFocused by stateHolder
+    val isTextFocused by controller
         .isTextFocused
         .collectAsStateWithLifecycle()
 
-    val isCaptureRequested by stateHolder
+    val isCaptureRequested by controller
         .isCaptureRequested
         .collectAsStateWithLifecycle()
 
@@ -118,23 +118,23 @@ fun MementoEditor(
                 cropRect = imageRect
             ) {
                 onImageCaptured(it)
-                stateHolder.finishCapture()
+                controller.finishCapture()
             }
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, rotationDelta ->
                     val focused = components.lastOrNull() ?: return@detectTransformGestures
-                    stateHolder.updateRotation(focused.id, rotationDelta)
+                    controller.updateRotation(focused.id, rotationDelta)
 
-                    stateHolder.updateLayout(focused.id, pan)
+                    controller.updateLayout(focused.id, pan)
 
-                    stateHolder.updateScale(focused.id, zoom)
+                    controller.updateScale(focused.id, zoom)
                 }
             }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { tapOffset ->
                         requestText = true
-                        stateHolder.requestFocusMode(true)
+                        controller.requestFocusMode(true)
                     }
                 )
             }
@@ -178,9 +178,9 @@ fun MementoEditor(
                     keyboardController?.hide()
                     if (requestText) {
                         requestText = false
-                        stateHolder.requestFocusMode(false)
+                        controller.requestFocusMode(false)
                         if (newTextState.text.isNotEmpty()) {
-                            stateHolder.createText(
+                            controller.createText(
                                 Offset(newTextOffset.x, newTextOffset.y),
                                 initialText = newTextState.text.toString(),
                                 seedColor = textSeedColor
@@ -190,7 +190,7 @@ fun MementoEditor(
                         newTextFocusRequester.freeFocus()
                         newTextState.clearText()
                     } else {
-                        stateHolder.releaseFocus()
+                        controller.releaseFocus()
                     }
                 }
             )
@@ -201,8 +201,8 @@ fun MementoEditor(
                     .zIndex(1001F)
                     .imePadding(),
                 onColorClick = {
-                    if (stateHolder.focusId != null) {
-                        stateHolder.updateText(stateHolder.focusId!!, it)
+                    if (controller.focusId != null) {
+                        controller.updateText(controller.focusId!!, it)
                     }
                     textSeedColor = it
                 }
@@ -213,18 +213,18 @@ fun MementoEditor(
             key(it.id) {
                 when (it) {
                     is MementoState.Text -> {
-                        val isTextFieldFocused = isTextFocused && stateHolder.focusId == it.id
+                        val isTextFieldFocused = isTextFocused && controller.focusId == it.id
                         val zIndex = if (isTextFieldFocused) 1000F else 0f
 
                         MementoTextField(
                             modifier = Modifier
                                 .zIndex(zIndex)
-                                .mementoGesture(it, stateHolder),
+                                .mementoGesture(it, controller),
                             state = it,
                             onFocused = {
                                 val paddingTop = 16.dp.value
                                 val savedOffset = Offset(it.offsetX, it.offsetY - paddingTop)
-                                stateHolder.executeTextFocus(
+                                controller.executeTextFocus(
                                     it.id,
                                     savedOffset,
                                     it.rotation,
@@ -232,7 +232,7 @@ fun MementoEditor(
                                 )
                             },
                             onKeyDown = {
-                                stateHolder.bringToFront(it.id)
+                                controller.bringToFront(it.id)
                             }
                         )
                     }
@@ -241,7 +241,7 @@ fun MementoEditor(
                         Box(
                             modifier = Modifier
                                 .size(150.dp)
-                                .mementoGesture(it, stateHolder)
+                                .mementoGesture(it, controller)
                                 .scale(it.scale),
                             content = { it.content() }
                         )

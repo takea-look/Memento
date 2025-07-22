@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 Box(modifier = Modifier.padding(paddingValues)) {
                     MementoEditor(
                         modifier = Modifier.fillMaxSize(),
-                        stateHolder = holder,
+                        controller = holder,
                         mainContent = {
                             Image(
                                 painter = painterResource(my.takealook.memento.R.drawable.ic_milk),

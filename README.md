@@ -64,7 +64,7 @@ fun MyEditorScreen() {
 
     MementoEditor(
         modifier = Modifier.fillMaxSize(),
-        stateHolder = mementoController,
+        controller = mementoController,
         onImageCaptured = { imageBitmap ->
             // Handle the captured image
         },
