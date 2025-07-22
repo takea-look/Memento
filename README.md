@@ -20,9 +20,8 @@ Built with Jetpack Compose for Multiplatform, Memento provides a seamless experi
 
 ## 🎬 Demo
 
-*(A GIF or screenshot demonstrating the editor in action would be perfect here!)*
+![ScreenRecording_07-23-2025 00-40-30_1](https://github.com/user-attachments/assets/df57b380-d7d6-48f3-b337-bc2d3f160f0c)
 
-![Memento Demo](https://user-images.githubusercontent.com/12345/67890.gif)
 
 ## 📦 Download
 
