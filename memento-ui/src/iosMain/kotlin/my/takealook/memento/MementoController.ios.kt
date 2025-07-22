@@ -9,7 +9,7 @@ import platform.UIKit.UIImage
  *
  * This function takes a [UIImage] and an optional [contentDescription] and
  * converts the image to a byte array. It then uses the `attachImage` function
- * (presumably from the `MementoStateHolder` class) to display the image
+ * (presumably from the `MementoController` class) to display the image
  * using `AsyncImage`.
  *
  * @param image The [UIImage] to be attached.

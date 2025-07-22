@@ -28,7 +28,7 @@ import kotlin.math.roundToInt
  * - Applying rotation to the memento.
  *
  * @param state The current [MementoState] of the memento item. If null, the modifier does nothing.
- * @param holder The [MementoStateHolder] that manages the state of all memento items.
+ * @param holder The [MementoController] that manages the state of all memento items.
  * @return A [Modifier] with gesture handling capabilities.
  */
 internal fun Modifier.mementoGesture(

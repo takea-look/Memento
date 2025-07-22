@@ -239,14 +239,14 @@ fun MementoController.finishCapture() {
 }
 
 /**
- * Updates a [MementoState] in the [MementoStateHolder] with the given [id].
+ * Updates a [MementoState] in the [MementoController] with the given [id].
  *
  * @param id The id of the [MementoState] to update.
  * @param onUpdate A lambda function that takes the current [MementoState] and returns the updated [MementoState].
  * @param T The type of the [MementoState] to update.
  *
  * @see MementoState
- * @see MementoStateHolder
+ * @see MementoController
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : MementoState> MementoController.update(id: Int, onUpdate: (T) -> MementoState) {
