@@ -46,7 +46,7 @@ Memento is available on **Maven Central**.
         implementation("my.takealook.memento:memento-core:0.0.1")
     }
     ```
-    *Always check for the [latest version](https://search.maven.org/search?q=g:my.takealook.memento) on Maven Central.*
+    *Always check for the [latest version](https://central.sonatype.com/search?q=g:my.takealook.memento) on Maven Central.*
 
 ## 🚀 Basic Usage
 
