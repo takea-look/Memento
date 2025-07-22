@@ -39,10 +39,10 @@ Memento is available on **Maven Central**.
     ```kotlin
     dependencies {
         // For the full UI editor experience (includes core)
-        implementation("my.takealook.memento:memento-ui:0.0.1")
+        implementation("my.takealook.memento:memento-ui:<latest-version>")
 
         // Or if you only need the core logic
-        implementation("my.takealook.memento:memento-core:0.0.1")
+        implementation("my.takealook.memento:memento-core:<latest-version>")
     }
     ```
     *Always check for the [latest version](https://central.sonatype.com/search?q=g:my.takealook.memento) on Maven Central.*
