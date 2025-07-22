@@ -52,4 +52,5 @@ jobs:
 
       - name: Publish To Maven Central
         run: |
-          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+          VERSION=$(echo ${{ github.ref }} | sed 's/refs\/tags\///')
+          ./gradlew publishAndReleaseToMavenCentral -Pversion=$VERSION --no-configuration-cache
