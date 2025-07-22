@@ -44,6 +44,11 @@ class MementoController {
     internal val _state: MutableStateFlow<List<MementoState>> = MutableStateFlow(emptyList())
     val state = _state.asStateFlow()
 
+    val currentFocusedComponentId get() = state
+        .value
+        .map { it.id }
+        .lastOrNull()
+
     internal var _focusId: Int? = null
     val focusId: Int? get() = _focusId
 
@@ -368,4 +373,36 @@ fun MementoController.attachImage(
     )
 
     _state.update { it + component }
+}
+
+/**
+ * Removes a memento component with the specified ID from the controller's state.
+ *
+ * This function filters the current list of memento states, removing the one that matches the given `id`.
+ * If no component with the specified ID is found, the state remains unchanged.
+ *
+ * @param id The ID of the memento component to remove.
+ */
+fun MementoController.remove(id: Int) {
+    _state.update { state.value.filterNot { it.id == id } }
+}
+
+/**
+ * Removes the currently focused memento component from the state.
+ *
+ * If no component is currently focused (i.e., `currentFocusedComponentId` is null),
+ * this function does nothing. Otherwise, it filters out the memento component
+ * whose ID matches `currentFocusedComponentId` from the list of memento states.
+ */
+fun MementoController.removeCurrent() {
+    _state.update { state.value.filterNot { it.id == currentFocusedComponentId } }
+}
+
+/**
+ * Removes all memento components from the controller.
+ * This function clears the internal list of memento states, effectively removing all visual elements
+ * managed by this controller from the UI.
+ */
+fun MementoController.removeAll() {
+    _state.value = emptyList()
 }

@@ -22,14 +22,47 @@ struct ComposeView: UIViewControllerRepresentable {
 struct ContentView: View {
     @State var controller: MementoController = MementoController()
     var body: some View {
-        ComposeView(controller)
-                .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
-        
-        Button("Attach Sticker") {
-            controller.attachImage(image: UIImage(named: "ic_glasses")!, contentDescription: nil)
-        }
-        Button("SaveToDisk") {
-            controller.requestCapture()
+        ZStack(alignment: .topTrailing) {
+            ComposeView(controller)
+                    .ignoresSafeArea(.all) // Compose has own keyboard handler
+            
+            HStack(spacing: 8) {
+                Button(action: {
+                    controller.attachImage(image: UIImage(named: "ic_glasses")!, contentDescription: "")
+                }) {
+                    Image(systemName: "plus")
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.blue)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+                }
+                
+                Button(action: {
+                    controller.removeCurrent()
+                }) {
+                    Image(systemName: "minus")
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+                }
+                
+                Button(action: {
+                    controller.requestCapture()
+                }) {
+                    Image(systemName: "square.and.arrow.down")
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.orange)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+                }
+            }
         }
     }
 }
