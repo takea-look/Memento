@@ -1,7 +1,4 @@
 [versions]
-# publish version
-memento = "0.0.1"
-
 agp = "8.9.3"
 android-compileSdk = "36"
 android-minSdk = "24"

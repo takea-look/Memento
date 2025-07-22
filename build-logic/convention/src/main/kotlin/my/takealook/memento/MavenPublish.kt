@@ -13,14 +13,12 @@ internal fun Project.configureMavenPublish() {
             .split("/")
             .last()
 
-        val version = libs.findVersion("memento")
-            .get()
-            .toString()
+        val version = findProperty("version") ?: return@configure
 
         coordinates(
             groupId = GROUP_ID,
             artifactId = artifactId,
-            version = version
+            version = version.toString()
         )
 
         pom {
