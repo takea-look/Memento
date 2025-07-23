@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-supported-red)](https://www.swift.org/documentation/package-manager/)
-[![iOS](https://img.shields.io/badge/iOS-14+-red)](https://www.swift.org/documentation/package-manager/)
+[![iOS](https://img.shields.io/badge/iOS-14+-red)](https://www.apple.com/kr/os/ios/)
 
 Memento is a powerful and customizable image editor library for Kotlin Multiplatform, inspired by Instagram Stories. It allows you to effortlessly add, edit, and manipulate text and images on a canvas, all with intuitive gestures.
 
