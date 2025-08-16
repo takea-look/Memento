@@ -86,15 +86,13 @@ fun MementoEditor(
 
     var requestText by rememberSaveable { mutableStateOf(false) }
 
-    var textSeedColor by remember { mutableStateOf(Color.Unspecified) }
+    var textColors by remember { mutableStateOf(MementoState.Text.Colors.Default) }
     val newTextState = rememberTextFieldState("", TextRange(12321321))
     val newTextFocusRequester = remember { FocusRequester() }
-    val newTextColorScheme = remember(textSeedColor) {
-        getMementoColorScheme(textSeedColor)
-    }
+    val newTextColorScheme = getMementoColorScheme(textColors)
     var newTextOffset by remember { mutableStateOf(Offset.Zero) }
 
-    var imageRect : Rect? by remember { mutableStateOf(null) }
+    var imageRect: Rect? by remember { mutableStateOf(null) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -165,8 +163,7 @@ fun MementoEditor(
                 .align(Alignment.Center)
                 .onGloballyPositioned {
                     imageRect = it.boundsInParent()
-                }
-            ,
+                },
             content = mainContent
         )
 
@@ -183,7 +180,7 @@ fun MementoEditor(
                             controller.createText(
                                 Offset(newTextOffset.x, newTextOffset.y),
                                 initialText = newTextState.text.toString(),
-                                seedColor = textSeedColor
+                                colors = textColors
                             )
                         }
 
@@ -200,11 +197,11 @@ fun MementoEditor(
                     .align(Alignment.BottomCenter)
                     .zIndex(1001F)
                     .imePadding(),
-                onColorClick = {
+                onColorClick = { colors ->
                     if (controller.focusId != null) {
-                        controller.updateText(controller.focusId!!, it)
+                        controller.updateText(controller.focusId!!, colors)
                     }
-                    textSeedColor = it
+                    textColors = colors
                 }
             )
         }

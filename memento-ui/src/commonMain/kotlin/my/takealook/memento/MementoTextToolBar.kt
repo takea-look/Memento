@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
 import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamicColorScheme
@@ -44,6 +48,12 @@ fun getMementoColorScheme(seedColor: Color) = dynamicColorScheme(
     specVersion = ColorSpec.SpecVersion.SPEC_2025
 )
 
+@Composable
+fun getMementoColorScheme(colors: MementoState.Text.Colors) = MaterialTheme.colorScheme.copy(
+    primary = Color(colors.contentColor),
+    primaryContainer = Color(colors.containerColor)
+)
+
 /**
  * A Composable that displays a horizontal row of color items representing a rainbow palette.
  *
@@ -56,8 +66,13 @@ fun getMementoColorScheme(seedColor: Color) = dynamicColorScheme(
 @Composable
 fun MementoRainbowPalette(
     modifier: Modifier = Modifier,
-    onColorClick: (Color) -> Unit = {}
+    onColorClick: (colors: MementoState.Text.Colors) -> Unit = {}
 ) {
+    val solidColors = listOf(
+        White to Black,
+        Black to White
+    )
+
     val colors = listOf(
         Red,
         Orange,
@@ -72,10 +87,33 @@ fun MementoRainbowPalette(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        items(solidColors) { (container, content) ->
+            val scheme = MaterialTheme.colorScheme.copy(
+                primary = content,
+                primaryContainer = container,
+            )
+            MementoPaletteItem(
+                colorScheme = scheme,
+                onColorClick = {
+                    onColorClick(
+                        MementoState.Text.Colors(
+                            containerColor = container.value,
+                            contentColor = content.value
+                        )
+                    )
+                }
+            )
+        }
+
         items(colors) { seedColor ->
+            val scheme = getMementoColorScheme(seedColor)
+            val colors = MementoState.Text.Colors(
+                containerColor = scheme.primaryContainer.value,
+                contentColor = scheme.primary.value
+            )
             MementoPaletteItem(
                 seedColor = seedColor,
-                onColorClick = { onColorClick(seedColor) }
+                onColorClick = { onColorClick(colors) }
             )
         }
     }
@@ -99,6 +137,19 @@ fun MementoPaletteItem(
 ) {
     val colorScheme = getMementoColorScheme(seedColor)
 
+    MementoPaletteItem(
+        modifier = modifier,
+        colorScheme = colorScheme,
+        onColorClick = onColorClick
+    )
+}
+
+@Composable
+fun MementoPaletteItem(
+    modifier: Modifier = Modifier,
+    colorScheme: ColorScheme,
+    onColorClick: () -> Unit = {}
+) {
     Box(
         modifier = modifier
             .defaultMinSize(minWidth = 36.dp, minHeight = 36.dp)
