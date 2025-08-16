@@ -12,7 +12,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "MementoUi",
-            url: "https://github.com/takea-look/Memento/releases/download/0.1.0/MementoUi.xcframework.zip",
-            checksum:"c1a9b6cc263a6a28634a58b660e188ce36f7fec8596ff009ced62222a0147f4d")
+            url: "https://github.com/takea-look/Memento/releases/download/0.2.1/MementoUi.xcframework.zip",
+            checksum:"a4a699247b7dee4c5d545751a0e8218913862260d51f50565024be89b5d85146")
     ]
 )
