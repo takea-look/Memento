@@ -110,7 +110,7 @@ sealed interface MementoState : Layout, Identifiable {
      * @property offsetY The vertical offset of the text element.
      * @property scale The scaling factor of the text element.
      * @property rotation The rotation angle of the text element.
-     * @property seedColor The color of the text, represented as a ULong.
+     * @property colors The color of the text, represented as a ULong.
      */
     data class Text(
         val text: String,
@@ -119,11 +119,23 @@ sealed interface MementoState : Layout, Identifiable {
         override val offsetY: Float,
         override val scale: Float,
         override val rotation: Float,
-        val seedColor: ULong,
+        val colors: Colors,
     ) : MementoState {
 
-        fun updateTextColor(seedColor: ULong): MementoState {
-            return copy(seedColor = seedColor)
+        data class Colors(
+            val containerColor: ULong,
+            val contentColor: ULong,
+        ) {
+            companion object {
+                val Default = Colors(
+                    containerColor = Color.White.value,
+                    contentColor = Color.Black.value,
+                )
+            }
+        }
+
+        fun updateTextColor(colors: Colors): MementoState {
+            return copy(colors = colors)
         }
 
         override fun updateLayout(offsetX: Float, offsetY: Float): MementoState {

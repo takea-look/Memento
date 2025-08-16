@@ -56,12 +56,10 @@ fun MementoTextField(
     onKeyDown: () -> Unit = {},
 ) {
     val scaledFontSize = (baseFontSize.value * state.scale).sp
-    val colorScheme = remember(state.seedColor) {
-        getMementoColorScheme(androidx.compose.ui.graphics.Color(state.seedColor))
-    }
+    val colorScheme = getMementoColorScheme(state.colors)
     val textStyle = textStyle.copy(
         fontSize = scaledFontSize,
-        color = colorScheme.onPrimaryContainer,
+        color = colorScheme.primary,
         background = colorScheme.primaryContainer
     )
     val textState = rememberTextFieldState(state.text)

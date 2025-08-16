@@ -31,6 +31,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.foundation)
+            implementation(libs.kotlinx.serialization)
         }
     }
 }

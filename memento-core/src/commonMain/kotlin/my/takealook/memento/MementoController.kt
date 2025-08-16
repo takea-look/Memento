@@ -2,13 +2,12 @@ package my.takealook.memento
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.json.Json
 
 /**
  * Controls the state of memento components, including their layout, focus, and capture requests.
@@ -75,40 +74,51 @@ class MementoController {
         val Saver = listSaver<MementoController, Map<String, Any?>>(
             save = {
                 it.state.value.map {
+
                     when(it) {
-                        is MementoState.Text -> mapOf(
-                            TYPE to "Text",
-                            ID to it.id,
-                            OFFSET_X to it.offsetX,
-                            OFFSET_Y to it.offsetY,
-                            SCALE to it.scale,
-                            ROTATION to it.rotation,
-                            TEXT to it.text,
-                            COLOR to it.seedColor
-                        )
-                        is MementoState.Image -> mapOf(
-                            TYPE to "Image",
-                            ID to it.id,
-                            OFFSET_X to it.offsetX,
-                            OFFSET_Y to it.offsetY,
-                            SCALE to it.scale,
-                            ROTATION to it.rotation,
-                        )
+                        is MementoState.Text -> {
+                            val color = Json.encodeToString(it.colors)
+
+                            return@map mapOf(
+                                TYPE to "Text",
+                                ID to it.id,
+                                OFFSET_X to it.offsetX,
+                                OFFSET_Y to it.offsetY,
+                                SCALE to it.scale,
+                                ROTATION to it.rotation,
+                                TEXT to it.text,
+                                COLOR to color
+                            )
+                        }
+                        is MementoState.Image -> {
+                            return@map mapOf(
+                                TYPE to "Image",
+                                ID to it.id,
+                                OFFSET_X to it.offsetX,
+                                OFFSET_Y to it.offsetY,
+                                SCALE to it.scale,
+                                ROTATION to it.rotation
+                            )
+                        }
                     }
                 }
             },
             restore = { list ->
                 val mappedState = list.map {
                     when(it[TYPE]) {
-                        "Text" -> MementoState.Text(
-                            id = it[ID] as Int,
-                            offsetX = it[OFFSET_X] as Float,
-                            offsetY = it[OFFSET_Y] as Float,
-                            scale = it[SCALE] as Float,
-                            rotation = it[ROTATION] as Float,
-                            text = it[TEXT] as String,
-                            seedColor = it[COLOR] as ULong
-                        )
+                        "Text" -> {
+                            val colors = Json.decodeFromString(it[COLOR] as String) as MementoState.Text.Colors
+
+                            return@map MementoState.Text(
+                                id = it[ID] as Int,
+                                offsetX = it[OFFSET_X] as Float,
+                                offsetY = it[OFFSET_Y] as Float,
+                                scale = it[SCALE] as Float,
+                                rotation = it[ROTATION] as Float,
+                                text = it[TEXT] as String,
+                                colors = colors
+                            )
+                        }
 
                         "Image" -> MementoState.Image(
                             id = it[ID] as Int,
@@ -270,11 +280,11 @@ fun <T : MementoState> MementoController.update(id: Int, onUpdate: (T) -> Mement
  * Updates the text color of a specific MementoState.Text component.
  *
  * @param id The ID of the MementoState.Text component to update.
- * @param color The new color to apply to the text.
+ * @param colors The new color to apply to the text.
  */
-fun MementoController.updateText(id: Int, color: Color) {
+fun MementoController.updateText(id: Int, colors: MementoState.Text.Colors) {
     update<MementoState.Text>(id) {
-        it.updateTextColor(color.value)
+        it.updateTextColor(colors)
     }
 }
 
@@ -331,12 +341,12 @@ fun MementoController.updateLayout(id: Int, dragAmount: Offset) {
  *
  * @param offset The initial offset of the text component.
  * @param initialText The initial text content.
- * @param seedColor The initial color of the text.
+ * @param colors The initial color of the text.
  */
 fun MementoController.createText(
     offset: Offset,
     initialText: String,
-    seedColor: Color
+    colors: MementoState.Text.Colors,
 ) {
     val component = MementoState.Text(
         id = state.value.size + 1,
@@ -345,7 +355,7 @@ fun MementoController.createText(
         offsetY = offset.y,
         scale = 1f,
         rotation = 0f,
-        seedColor = seedColor.value
+        colors = colors
     )
 
     _state.update { it + component }
